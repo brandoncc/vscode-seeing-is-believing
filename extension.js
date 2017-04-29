@@ -2,18 +2,30 @@ const { commands, window, } = require('vscode');
 const SeeingIsBelieving = require('./lib/seeing_is_believing');
 
 function activate(context) {
-  var disposable = commands.registerCommand('seeing-is-believing.toggle-marks', function () {
+  const verifyRuby = function() {
     const activeEditor = window.activeTextEditor;
 
     if (!activeEditor) { return; }
     if (activeEditor.document.languageId !== 'ruby') {
       window.showErrorMessage('Seeing is Believing can only process Ruby files.');
-      return;
+      return false;
     }
 
-    SeeingIsBelieving.toggleMarks();
+    return true;
+  };
+  const disposableToggleMarks = commands.registerCommand('seeing-is-believing.toggle-marks', function () {
+    if (!verifyRuby()) { return new Promise((_, rej) => rej('Seeing is Believing can only process Ruby files')); }
+
+    return SeeingIsBelieving.toggleMarks();
   });
 
-  context.subscriptions.push(disposable);
+  const disposableRun = commands.registerCommand('seeing-is-believing.run', function() {
+    if (!verifyRuby()) { return; }
+
+    return SeeingIsBelieving.run();
+  });
+
+  context.subscriptions.push(disposableToggleMarks);
+  context.subscriptions.push(disposableRun);
 }
 exports.activate = activate;

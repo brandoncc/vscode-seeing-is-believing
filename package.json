@@ -1,36 +1,45 @@
 {
-    "name": "vscode-seeing-is-believing",
-    "displayName": "Seeing is Believing Integration",
-    "description": "Integration for https://github.com/JoshCheek/seeing_is_believing",
-    "version": "0.0.1",
-    "publisher": "brandoncc",
-    "repository": "https://github.com/brandoncc/vscode-seeing-is-believing",
-    "engines": {
-        "vscode": "^1.11.0"
-    },
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "onCommand:seeing-is-believing.toggle-marks"
-    ],
-    "main": "./extension",
-    "contributes": {
-        "commands": [{
-            "command": "seeing-is-believing.toggle-marks",
-            "title": "Seeing is Believing: Mark/Unmark Line for Annotation"
-        }]
-    },
-    "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "node ./node_modules/vscode/bin/test"
-    },
-    "devDependencies": {
-        "typescript": "^2.0.3",
-        "vscode": "^1.0.0",
-        "mocha": "^2.3.3",
-        "eslint": "^3.6.0",
-        "@types/node": "^6.0.40",
-        "@types/mocha": "^2.2.32"
-    }
+  "name": "vscode-seeing-is-believing",
+  "displayName": "Seeing is Believing Integration",
+  "description": "Integration for https://github.com/JoshCheek/seeing_is_believing",
+  "version": "0.0.1",
+  "publisher": "brandoncc",
+  "repository": "https://github.com/brandoncc/vscode-seeing-is-believing",
+  "engines": {
+    "vscode": "^1.11.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:seeing-is-believing.toggle-marks",
+    "onCommand:seeing-is-believing.run"
+  ],
+  "main": "./extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "seeing-is-believing.toggle-marks",
+        "title": "Seeing is Believing: Mark/Unmark Line for Annotation"
+      },
+      {
+        "command": "seeing-is-believing.run",
+        "title": "Seeing is Believing: Run"
+      }
+    ]
+  },
+  "scripts": {
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.32",
+    "@types/node": "^6.0.40",
+    "chai": "^3.5.0",
+    "eslint": "^3.6.0",
+    "mocha": "^2.3.3",
+    "sinon": "^2.1.0",
+    "typescript": "^2.0.3",
+    "vscode": "^1.0.0"
+  }
 }
