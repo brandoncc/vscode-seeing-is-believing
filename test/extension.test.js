@@ -221,7 +221,6 @@ describe("Extension Tests", function() {
         }, function() {
           done(new Error('Failed to execute command'));
         });
-
       });
     });
   });
