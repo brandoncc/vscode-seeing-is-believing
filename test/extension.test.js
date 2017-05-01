@@ -269,7 +269,7 @@ describe("Integration tests", function() {
     });
   });
 
-  describe("run", function() {
+  describe("run and clean", function() {
     beforeEach(function(done) {
       openFile('sample.rb', done).then(function() {
         done();
@@ -286,7 +286,7 @@ describe("Integration tests", function() {
       commands.executeCommand('seeing-is-believing.run').then(function() {
         spy.restore();
         SeeingIsBelieving.command = cachedCommand;
-        done(new Error('SHould have failed to execute command'));
+        done(new Error('Should have failed to execute command'));
       }, function() {
         expect(spy.calledWith(`Command 'fake_command' does not exist. Is it installed?`)).to.equal(true);
         spy.restore();
@@ -295,7 +295,7 @@ describe("Integration tests", function() {
       });
     });
 
-    it("updates the document text", function(done) {
+    it("updates the document text and then cleans it", function(done) {
       const lines = () => window.activeTextEditor.document.getText().split(/\r?\n/);
       const linesWithText = () => lines().filter(line => line.trim() !== '');
       const lastLineWithText = () => linesWithText()[linesWithText().length - 1];
@@ -305,7 +305,14 @@ describe("Integration tests", function() {
       commands.executeCommand('seeing-is-believing.run').then(function() {
         expect(lastLineWithText()).to.eq("# >> My name is Jordan and I was born 1/23/80");
 
-        done();
+        commands.executeCommand('seeing-is-believing.clean').then(function() {
+          expect(lastLineWithText()).to.eq('puts "My name is #{first_name} and I was born #{dob}"');
+
+          done();
+        }, function(error) {
+          debugger;
+          done(new Error('Failed to execute command'));
+        });
       }, function(error) {
         debugger;
         done(new Error('Failed to execute command'));

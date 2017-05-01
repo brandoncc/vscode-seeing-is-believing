@@ -13,7 +13,8 @@
   ],
   "activationEvents": [
     "onCommand:seeing-is-believing.toggle-marks",
-    "onCommand:seeing-is-believing.run"
+    "onCommand:seeing-is-believing.run",
+    "onCommand:seeing-is-believing.clean"
   ],
   "main": "./extension",
   "contributes": {
@@ -25,6 +26,10 @@
       {
         "command": "seeing-is-believing.run",
         "title": "Seeing is Believing: Run"
+      },
+      {
+        "command": "seeing-is-believing.clean",
+        "title": "Seeing is Believing: Clean"
       }
     ]
   },

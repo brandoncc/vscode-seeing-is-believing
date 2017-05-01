@@ -25,7 +25,14 @@ function activate(context) {
     return SeeingIsBelieving.run();
   });
 
+  const disposableClean  = commands.registerCommand('seeing-is-believing.clean', function() {
+    if (!verifyRuby()) { return; }
+
+    return SeeingIsBelieving.clean();
+  });
+
   context.subscriptions.push(disposableToggleMarks);
   context.subscriptions.push(disposableRun);
+  context.subscriptions.push(disposableClean);
 }
 exports.activate = activate;
