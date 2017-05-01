@@ -49,21 +49,21 @@ describe("Integration tests", function() {
       });
     });
 
-    it("don't work in other files", function(done) {
-      const spy = sinon.spy(window, 'showErrorMessage');
+    const extensionCommands = ['toggle-marks', 'clean', 'run'];
 
-      openFile('sample.js', done).then(function() {
-        commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
-          spy.restore();
-          done('Should have failed to execute command');
+    extensionCommands.forEach(function(command) {
+      it(`won't run seeing-is-believing.${command} in other files`, function(done) {
+        openFile('sample.js', done).then(function() {
+
+          commands.executeCommand(`seeing-is-believing.${command}`).then(function() {
+            done('Should have failed to execute command');
+          }, function(error) {
+            expect(error).to.equal('Seeing is Believing can only process Ruby files');
+            done();
+          });
         }, function() {
-          expect(spy.calledOnce).to.equal(true);
-          spy.restore();
-          done();
+          done(new Error('Failed to open file'));
         });
-      }, function() {
-        spy.restore();
-        done(new Error('Failed to open file'));
       });
     });
   });

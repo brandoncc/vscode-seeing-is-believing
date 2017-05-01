@@ -6,12 +6,7 @@ function activate(context) {
     const activeEditor = window.activeTextEditor;
 
     if (!activeEditor) { return; }
-    if (activeEditor.document.languageId !== 'ruby') {
-      window.showErrorMessage('Seeing is Believing can only process Ruby files.');
-      return false;
-    }
-
-    return true;
+    return activeEditor.document.languageId === 'ruby';
   };
   const disposableToggleMarks = commands.registerCommand('seeing-is-believing.toggle-marks', function () {
     if (!verifyRuby()) { return new Promise((_, rej) => rej('Seeing is Believing can only process Ruby files')); }
@@ -20,13 +15,13 @@ function activate(context) {
   });
 
   const disposableRun = commands.registerCommand('seeing-is-believing.run', function() {
-    if (!verifyRuby()) { return; }
+    if (!verifyRuby()) { return new Promise((_, rej) => rej('Seeing is Believing can only process Ruby files')); }
 
     return SeeingIsBelieving.run();
   });
 
   const disposableClean  = commands.registerCommand('seeing-is-believing.clean', function() {
-    if (!verifyRuby()) { return; }
+    if (!verifyRuby()) { return new Promise((_, rej) => rej('Seeing is Believing can only process Ruby files')); }
 
     return SeeingIsBelieving.clean();
   });
