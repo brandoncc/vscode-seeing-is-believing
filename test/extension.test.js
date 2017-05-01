@@ -7,6 +7,7 @@ const sinon  = require('sinon');
 const path = require('path');
 
 const extension = require('../extension');
+const SeeingIsBelieving = require('../lib/seeing_is_believing');
 
 describe("Integration tests", function() {
   afterEach(function(done) {
@@ -264,6 +265,50 @@ describe("Integration tests", function() {
         }, function() {
           done(new Error('Failed to execute command'));
         });
+      });
+    });
+  });
+
+  describe("run", function() {
+    beforeEach(function(done) {
+      openFile('sample.rb', done).then(function() {
+        done();
+      }, function() {
+        done(new Error('Failed to open file'));
+      });
+    });
+
+    it("displays an error if the executable is unavailable", function(done) {
+      const spy = sinon.spy(window, 'showErrorMessage');
+      const cachedCommand = SeeingIsBelieving.command;
+      SeeingIsBelieving.command = 'fake_command';
+
+      commands.executeCommand('seeing-is-believing.run').then(function() {
+        spy.restore();
+        SeeingIsBelieving.command = cachedCommand;
+        done(new Error('SHould have failed to execute command'));
+      }, function() {
+        expect(spy.calledWith(`Command 'fake_command' does not exist. Is it installed?`)).to.equal(true);
+        spy.restore();
+        SeeingIsBelieving.command = cachedCommand;
+        done();
+      });
+    });
+
+    it("updates the document text", function(done) {
+      const lines = () => window.activeTextEditor.document.getText().split(/\r?\n/);
+      const linesWithText = () => lines().filter(line => line.trim() !== '');
+      const lastLineWithText = () => linesWithText()[linesWithText().length - 1];
+
+      expect(lastLineWithText()).to.eq('puts "My name is #{first_name} and I was born #{dob}"');
+
+      commands.executeCommand('seeing-is-believing.run').then(function() {
+        expect(lastLineWithText()).to.eq("# >> My name is Jordan and I was born 1/23/80");
+
+        done();
+      }, function(error) {
+        debugger;
+        done(new Error('Failed to execute command'));
       });
     });
   });
