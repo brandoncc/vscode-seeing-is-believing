@@ -21,7 +21,7 @@
     "commands": [
       {
         "command": "seeing-is-believing.toggle-marks",
-        "title": "Seeing is Believing: Mark/Unmark Line for Annotation"
+        "title": "Seeing is Believing: Mark/Unmark Line(s) for Annotation"
       },
       {
         "command": "seeing-is-believing.run",
@@ -31,7 +31,18 @@
         "command": "seeing-is-believing.clean",
         "title": "Seeing is Believing: Clean"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Seeing is believing configuration",
+      "properties": {
+        "seeing-is-believing.annotate-all-if-none-are-marked": {
+          "type": "boolean",
+          "default": false,
+          "description": "Disables --xmpfilter-style if there are no lines marked for annotation"
+        }
+      }
+    }
   },
   "scripts": {
     "postinstall": "node ./node_modules/vscode/bin/install",

@@ -3,5 +3,5 @@ All notable changes to the "vscode-seeing-is-believing" extension will be docume
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
-- Toggle annotation marks for selected lines
+## 0.0.1
+- Initial release
