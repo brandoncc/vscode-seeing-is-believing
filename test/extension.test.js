@@ -318,5 +318,47 @@ describe("Integration tests", function() {
         done(new Error('Failed to execute command'));
       });
     });
+
+    it("cleans selected lines", function(done) {
+      const document = window.activeTextEditor.document;
+
+      commands.executeCommand('cursorTop').then(function() {
+        commands.executeCommand('cursorDownSelect').then(function() {
+          commands.executeCommand('cursorDownSelect').then(function() {
+            commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
+              expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
+              expect(document.lineAt(1).text).to.equal('last_name = "Simone"  # =>');
+              expect(document.lineAt(2).text).to.equal('dob = "1/23/80"       # =>');
+
+              commands.executeCommand('cursorTop').then(function() {
+                commands.executeCommand('cursorDownSelect').then(function() {
+                  commands.executeCommand('seeing-is-believing.clean').then(function() {
+                    expect(document.lineAt(0).text).to.equal('first_name = "Jordan"');
+                    expect(document.lineAt(1).text).to.equal('last_name = "Simone"');
+                    expect(document.lineAt(2).text).to.equal('dob = "1/23/80"       # =>');
+
+                    done();
+                  }, function() {
+                    done(new Error('Failed to execute command'));
+                  });
+                }, function() {
+                  done(new Error('Failed to execute command'));
+                });
+              }, function() {
+                done(new Error('Failed to execute command'));
+              });
+            }, function() {
+              done(new Error('Failed to execute command'));
+            });
+          }, function() {
+            done(new Error('Failed to execute command'));
+          });
+        }, function() {
+          done(new Error('Failed to execute command'));
+        });
+      }, function() {
+        done(new Error('Failed to execute command'));
+      });
+    });
   });
 });
