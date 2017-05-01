@@ -82,7 +82,7 @@ describe("Integration tests", function() {
         const document = window.activeTextEditor.document;
 
         commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
-          expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
+          expect(document.lineAt(0).text).to.equal('first_name = "Jordan"  # =>');
           done();
         }, function() {
           done(new Error('Failed to execute command'));
@@ -99,14 +99,14 @@ describe("Integration tests", function() {
                 commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
                   expect(document.lineAt(0).text).to.equal('first_name = "Jordan"');
                   expect(document.lineAt(1).text).to.equal('last_name = "Simone"');
-                  expect(document.lineAt(2).text).to.equal('dob = "1/23/80" # =>');
+                  expect(document.lineAt(2).text).to.equal('dob = "1/23/80"  # =>');
 
                   commands.executeCommand('cursorUpSelect').then(function() {
                     commands.executeCommand('cursorUpSelect').then(function() {
                       commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
-                        expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
-                        expect(document.lineAt(1).text).to.equal('last_name = "Simone"  # =>');
-                        expect(document.lineAt(2).text).to.equal('dob = "1/23/80"       # =>');
+                        expect(document.lineAt(0).text).to.equal('first_name = "Jordan"  # =>');
+                        expect(document.lineAt(1).text).to.equal('last_name = "Simone"   # =>');
+                        expect(document.lineAt(2).text).to.equal('dob = "1/23/80"        # =>');
 
                         done();
                       }, function() {
@@ -137,15 +137,15 @@ describe("Integration tests", function() {
 
           commands.executeCommand('cursorTop').then(function() {
             commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
-              expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
+              expect(document.lineAt(0).text).to.equal('first_name = "Jordan"  # =>');
               expect(document.lineAt(1).text).to.equal('last_name = "Simone"');
               expect(document.lineAt(2).text).to.equal('dob = "1/23/80"');
 
               commands.executeCommand('editor.action.insertCursorBelow').then(function() {
                 commands.executeCommand('cursorRightSelect').then(function() {
                   commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
-                    expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
-                    expect(document.lineAt(1).text).to.equal('last_name = "Simone" # =>');
+                    expect(document.lineAt(0).text).to.equal('first_name = "Jordan"  # =>');
+                    expect(document.lineAt(1).text).to.equal('last_name = "Simone"  # =>');
 
                     done();
                   }, function() {
@@ -174,9 +174,9 @@ describe("Integration tests", function() {
             commands.executeCommand('cursorDownSelect').then(function() {
               commands.executeCommand('cursorDownSelect').then(function() {
                 commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
-                  expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
-                  expect(document.lineAt(1).text).to.equal('last_name = "Simone"  # =>');
-                  expect(document.lineAt(2).text).to.equal('dob = "1/23/80"       # =>');
+                  expect(document.lineAt(0).text).to.equal('first_name = "Jordan"  # =>');
+                  expect(document.lineAt(1).text).to.equal('last_name = "Simone"   # =>');
+                  expect(document.lineAt(2).text).to.equal('dob = "1/23/80"        # =>');
 
                   done();
                 }, function() {
@@ -200,9 +200,9 @@ describe("Integration tests", function() {
             commands.executeCommand('editor.action.insertCursorBelow').then(function() {
               commands.executeCommand('editor.action.insertCursorBelow').then(function() {
                 commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
-                  expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
-                  expect(document.lineAt(1).text).to.equal('last_name = "Simone" # =>');
-                  expect(document.lineAt(2).text).to.equal('dob = "1/23/80" # =>');
+                  expect(document.lineAt(0).text).to.equal('first_name = "Jordan"  # =>');
+                  expect(document.lineAt(1).text).to.equal('last_name = "Simone"  # =>');
+                  expect(document.lineAt(2).text).to.equal('dob = "1/23/80"  # =>');
 
                   done();
                 }, function() {
@@ -309,13 +309,82 @@ describe("Integration tests", function() {
           expect(lastLineWithText()).to.eq('puts "My name is #{first_name} and I was born #{dob}"');
 
           done();
-        }, function(error) {
-          debugger;
+        }, function() {
           done(new Error('Failed to execute command'));
         });
-      }, function(error) {
-        debugger;
+      }, function() {
         done(new Error('Failed to execute command'));
+      });
+    });
+
+    context("xmpfilter-style is disabled if none marked", function() {
+      it("annotates the whole document if no lines are marked", function(done) {
+        const document = window.activeTextEditor.document;
+        const stub = sinon.stub(workspace, 'getConfiguration');
+        stub.withArgs('seeing-is-believing').returns({
+          get: function(key) {
+            if (key === 'annotate-all-if-none-are-marked') { return true; }
+            else { done(new Error('Wrong key was attempted to be retrieved')) }
+          }
+        });
+
+        commands.executeCommand('seeing-is-believing.run').then(function() {
+          expect(document.lineAt(0).text).to.eq('first_name = "Jordan"  # => "Jordan"');
+          expect(document.lineAt(1).text).to.eq('last_name = "Simone"   # => "Simone"');
+          expect(document.lineAt(2).text).to.eq('dob = "1/23/80"        # => "1/23/80"');
+          expect(document.lineAt(3).text).to.eq('');
+          expect(document.lineAt(4).text).to.eq('puts "My name is #{first_name} and I was born #{dob}"  # => nil');
+          expect(document.lineAt(5).text).to.eq('');
+          expect(document.lineAt(6).text).to.eq('# >> My name is Jordan and I was born 1/23/80');
+
+          stub.restore();
+          done();
+        }, function() {
+          stub.restore();
+          done(new Error('Failed to execute command'));
+        });
+      });
+
+      it("only annotates marked lines if any are marked", function(done) {
+        const document = window.activeTextEditor.document;
+        const stub = sinon.stub(workspace, 'getConfiguration');
+        stub.withArgs('seeing-is-believing').returns({
+          get: function(key) {
+            if (key === 'annotate-all-if-none-are-marked') { return true; }
+            else { done(new Error('Wrong key was attempted to be retrieved')) }
+          }
+        });
+
+        commands.executeCommand('cursorTop').then(function() {
+          commands.executeCommand('cursorDownSelect').then(function() {
+            commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
+              commands.executeCommand('seeing-is-believing.run').then(function() {
+                expect(document.lineAt(0).text).to.eq('first_name = "Jordan"  # => "Jordan"');
+                expect(document.lineAt(1).text).to.eq('last_name = "Simone"   # => "Simone"');
+                expect(document.lineAt(2).text).to.eq('dob = "1/23/80"');
+                expect(document.lineAt(3).text).to.eq('');
+                expect(document.lineAt(4).text).to.eq('puts "My name is #{first_name} and I was born #{dob}"');
+                expect(document.lineAt(5).text).to.eq('');
+                expect(document.lineAt(6).text).to.eq('# >> My name is Jordan and I was born 1/23/80');
+
+                stub.restore();
+                done();
+              }, function() {
+                stub.restore();
+                done(new Error('Failed to execute command'));
+              });
+            }, function() {
+              stub.restore();
+              done(new Error('Failed to execute command'));
+            });
+          }, function() {
+            stub.restore();
+            done(new Error('Failed to execute command'));
+          });
+        }, function() {
+          stub.restore();
+          done(new Error('Failed to execute command'));
+        });
       });
     });
 
@@ -326,16 +395,16 @@ describe("Integration tests", function() {
         commands.executeCommand('cursorDownSelect').then(function() {
           commands.executeCommand('cursorDownSelect').then(function() {
             commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
-              expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
-              expect(document.lineAt(1).text).to.equal('last_name = "Simone"  # =>');
-              expect(document.lineAt(2).text).to.equal('dob = "1/23/80"       # =>');
+              expect(document.lineAt(0).text).to.equal('first_name = "Jordan"  # =>');
+              expect(document.lineAt(1).text).to.equal('last_name = "Simone"   # =>');
+              expect(document.lineAt(2).text).to.equal('dob = "1/23/80"        # =>');
 
               commands.executeCommand('cursorTop').then(function() {
                 commands.executeCommand('cursorDownSelect').then(function() {
                   commands.executeCommand('seeing-is-believing.clean').then(function() {
                     expect(document.lineAt(0).text).to.equal('first_name = "Jordan"');
                     expect(document.lineAt(1).text).to.equal('last_name = "Simone"');
-                    expect(document.lineAt(2).text).to.equal('dob = "1/23/80"       # =>');
+                    expect(document.lineAt(2).text).to.equal('dob = "1/23/80"        # =>');
 
                     done();
                   }, function() {
