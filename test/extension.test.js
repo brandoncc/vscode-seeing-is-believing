@@ -1,4 +1,4 @@
-/* global describe, before, beforeEach, after, afterEach, it */
+/* global describe, before, beforeEach, after, afterEach, it, context */
 
 const { commands, window, workspace, Uri } = require('vscode');
 
@@ -8,7 +8,7 @@ const path = require('path');
 
 const extension = require('../extension');
 
-describe("Extension Tests", function() {
+describe("Integration tests", function() {
   afterEach(function(done) {
       commands.executeCommand('workbench.action.closeActiveEditor').then(function() {
         setTimeout(done, 100); // We get failures if we don't allow a little time after closing
@@ -88,45 +88,29 @@ describe("Extension Tests", function() {
         });
       });
 
-      it("adds the annotation mark to multiple lines", function(done) {
-        const document = window.activeTextEditor.document;
+      context("some lines are annotated", function() {
+        it("adds the annotation mark to unmarked lines in the same selection group", function(done) {
+          const document = window.activeTextEditor.document;
 
-        commands.executeCommand('cursorTop').then(function() {
-          commands.executeCommand('editor.action.insertCursorBelow').then(function() {
-            commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
-              expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
-              expect(document.lineAt(1).text).to.equal('last_name = "Simone"  # =>');
-              done();
-            }, function() {
-              done(new Error('Failed to execute command'));
-            });
-          }, function() {
-            done(new Error('Failed to execute command'));
-          });
-        }, function() {
-          done(new Error('Failed to execute command'));
-        });
-      });
-
-      it("adds the annotation mark to unmarked lines when some of selection is marked", function(done) {
-        const document = window.activeTextEditor.document;
-
-        commands.executeCommand('cursorTop').then(function() {
-          commands.executeCommand('cursorDown').then(function() {
+          commands.executeCommand('cursorTop').then(function() {
             commands.executeCommand('cursorDown').then(function() {
-              commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
-                expect(document.lineAt(0).text).to.equal('first_name = "Jordan"');
-                expect(document.lineAt(1).text).to.equal('last_name = "Simone"');
-                expect(document.lineAt(2).text).to.equal('dob = "1/23/80" # =>');
+              commands.executeCommand('cursorDown').then(function() {
+                commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
+                  expect(document.lineAt(0).text).to.equal('first_name = "Jordan"');
+                  expect(document.lineAt(1).text).to.equal('last_name = "Simone"');
+                  expect(document.lineAt(2).text).to.equal('dob = "1/23/80" # =>');
 
-                commands.executeCommand('editor.action.insertCursorAbove').then(function() {
-                  commands.executeCommand('editor.action.insertCursorAbove').then(function() {
-                    commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
-                      expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
-                      expect(document.lineAt(1).text).to.equal('last_name = "Simone"  # =>');
-                      expect(document.lineAt(2).text).to.equal('dob = "1/23/80"       # =>');
+                  commands.executeCommand('cursorUpSelect').then(function() {
+                    commands.executeCommand('cursorUpSelect').then(function() {
+                      commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
+                        expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
+                        expect(document.lineAt(1).text).to.equal('last_name = "Simone"  # =>');
+                        expect(document.lineAt(2).text).to.equal('dob = "1/23/80"       # =>');
 
-                      done();
+                        done();
+                      }, function() {
+                        done(new Error('Failed to execute command'));
+                      });
                     }, function() {
                       done(new Error('Failed to execute command'));
                     });
@@ -145,23 +129,30 @@ describe("Extension Tests", function() {
           }, function() {
             done(new Error('Failed to execute command'));
           });
-        }, function() {
-          done(new Error('Failed to execute command'));
         });
-      });
 
-      it("aligns annotation new groups of marks", function(done) {
-        const document = window.activeTextEditor.document;
+        it("adds the annotation mark to unmarked lines in the other selection groups", function(done) {
+          const document = window.activeTextEditor.document;
 
-        commands.executeCommand('cursorTop').then(function() {
-          commands.executeCommand('editor.action.insertCursorBelow').then(function() {
-            commands.executeCommand('editor.action.insertCursorBelow').then(function() {
-              commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
-                expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
-                expect(document.lineAt(1).text).to.equal('last_name = "Simone"  # =>');
-                expect(document.lineAt(2).text).to.equal('dob = "1/23/80"       # =>');
+          commands.executeCommand('cursorTop').then(function() {
+            commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
+              expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
+              expect(document.lineAt(1).text).to.equal('last_name = "Simone"');
+              expect(document.lineAt(2).text).to.equal('dob = "1/23/80"');
 
-                done();
+              commands.executeCommand('editor.action.insertCursorBelow').then(function() {
+                commands.executeCommand('cursorRightSelect').then(function() {
+                  commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
+                    expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
+                    expect(document.lineAt(1).text).to.equal('last_name = "Simone" # =>');
+
+                    done();
+                  }, function() {
+                    done(new Error('Failed to execute command'));
+                  });
+                }, function() {
+                  done(new Error('Failed to execute command'));
+                });
               }, function() {
                 done(new Error('Failed to execute command'));
               });
@@ -171,11 +162,63 @@ describe("Extension Tests", function() {
           }, function() {
             done(new Error('Failed to execute command'));
           });
-        }, function() {
-          done(new Error('Failed to execute command'));
         });
       });
-    });
+
+      context("adds the annotation mark to multiple lines", function(done) {
+        it("aligns marks in the same selection group", function(done) {
+          const document = window.activeTextEditor.document;
+
+          commands.executeCommand('cursorTop').then(function() {
+            commands.executeCommand('cursorDownSelect').then(function() {
+              commands.executeCommand('cursorDownSelect').then(function() {
+                commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
+                  expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
+                  expect(document.lineAt(1).text).to.equal('last_name = "Simone"  # =>');
+                  expect(document.lineAt(2).text).to.equal('dob = "1/23/80"       # =>');
+
+                  done();
+                }, function() {
+                  done(new Error('Failed to execute command'));
+                });
+              }, function() {
+                done(new Error('Failed to execute command'));
+              });
+            }, function() {
+              done(new Error('Failed to execute command'));
+            });
+          }, function() {
+            done(new Error('Failed to execute command'));
+          });
+        });
+
+        it("does not align different selection groups", function(done) {
+          const document = window.activeTextEditor.document;
+
+          commands.executeCommand('cursorTop').then(function() {
+            commands.executeCommand('editor.action.insertCursorBelow').then(function() {
+              commands.executeCommand('editor.action.insertCursorBelow').then(function() {
+                commands.executeCommand('seeing-is-believing.toggle-marks').then(function() {
+                  expect(document.lineAt(0).text).to.equal('first_name = "Jordan" # =>');
+                  expect(document.lineAt(1).text).to.equal('last_name = "Simone" # =>');
+                  expect(document.lineAt(2).text).to.equal('dob = "1/23/80" # =>');
+
+                  done();
+                }, function() {
+                  done(new Error('Failed to execute command'));
+                });
+              }, function() {
+                done(new Error('Failed to execute command'));
+              });
+            }, function() {
+              done(new Error('Failed to execute command'));
+            });
+          }, function() {
+            done(new Error('Failed to execute command'));
+          });
+        });
+      });;
+    });;
 
     describe("removing", function() {
       beforeEach(function(done) {
