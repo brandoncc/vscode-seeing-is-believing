@@ -269,6 +269,30 @@ describe("Integration tests", function() {
     });
   });
 
+  describe("require relative files", function() {
+    beforeEach(function(done) {
+      openFile('requirer.rb', done).then(function() {
+        done();
+      }, function() {
+        done(new Error('Failed to open file'));
+      });
+    });
+
+    it("works properly", function(done) {
+      const firstLine = () => window.activeTextEditor.document.getText().split(/\r?\n/)[0];
+
+      expect(firstLine()).to.eq("require_relative 'requiree'");
+
+      commands.executeCommand('seeing-is-believing.run').then(function() {
+        expect(firstLine()).to.eq("require_relative 'requiree'  # => true");
+
+        done();
+      }, function() {
+        done(new Error('Failed to execute command'));
+      });
+    });
+  });
+
   describe("run and clean", function() {
     beforeEach(function(done) {
       openFile('sample.rb', done).then(function() {
