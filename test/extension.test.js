@@ -19,7 +19,7 @@ describe("Integration tests", function() {
   });
 
   function fileToUri(fileName) {
-    return Uri.parse('file://' + path.join(workspace.rootPath, fileName));
+    return Uri.file(path.join(workspace.rootPath, fileName));
   }
 
   function openFile(fileName, doneCallback) {
