@@ -1,8 +1,8 @@
-const { commands, window, } = require('vscode');
+const { commands, window } = require('vscode');
 const SeeingIsBelieving = require('./lib/seeing_is_believing');
 
-function activate(context) {
-  const verifyRuby = function() {
+function activate (context) {
+  const verifyRuby = function () {
     const activeEditor = window.activeTextEditor;
 
     if (!activeEditor) { return; }
@@ -14,13 +14,13 @@ function activate(context) {
     return SeeingIsBelieving.toggleMarks();
   });
 
-  const disposableRun = commands.registerCommand('seeing-is-believing.run', function() {
+  const disposableRun = commands.registerCommand('seeing-is-believing.run', function () {
     if (!verifyRuby()) { return new Promise((_, rej) => rej('Seeing is Believing can only process Ruby files')); }
 
     return SeeingIsBelieving.run();
   });
 
-  const disposableClean  = commands.registerCommand('seeing-is-believing.clean', function() {
+  const disposableClean = commands.registerCommand('seeing-is-believing.clean', function () {
     if (!verifyRuby()) { return new Promise((_, rej) => rej('Seeing is Believing can only process Ruby files')); }
 
     return SeeingIsBelieving.clean();
