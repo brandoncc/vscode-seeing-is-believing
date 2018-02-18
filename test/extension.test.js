@@ -268,7 +268,7 @@ describe('Integration tests', function () {
     });
   });
 
-  describe.only('require relative files', function () {
+  describe('require relative files', function () {
     beforeEach(function (done) {
       openFile('requirer.rb', done).then(function () {
         done();
