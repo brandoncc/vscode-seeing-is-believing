@@ -3,6 +3,9 @@ All notable changes to the "vscode-seeing-is-believing" extension will be docume
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.0.6
+Fix a bug handling spaces in windows paths with the `--as` flag.
+
 ## 0.0.5
 - Code cleanup
 - Reintroduce the ability to use `require_relative`, thanks to the new `--local-cwd` flag for the binary. Thanks @JoshCheek!
