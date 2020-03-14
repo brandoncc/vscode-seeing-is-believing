@@ -3,6 +3,11 @@
   "displayName": "Seeing is Believing Integration",
   "description": "Integration for https://github.com/JoshCheek/seeing_is_believing",
   "version": "0.1.0",
+  "publisher": "brandoncc",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brandoncc/vscode-seeing-is-believing.git"
+  },
   "engines": {
     "vscode": "^1.11.0"
   },
