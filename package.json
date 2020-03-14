@@ -2,11 +2,9 @@
   "name": "vscode-seeing-is-believing",
   "displayName": "Seeing is Believing Integration",
   "description": "Integration for https://github.com/JoshCheek/seeing_is_believing",
-  "version": "0.0.6",
-  "publisher": "brandoncc",
-  "repository": "https://github.com/brandoncc/vscode-seeing-is-believing",
+  "version": "0.1.0",
   "engines": {
-    "vscode": "^1.11.0"
+    "vscode": "^1.43.0"
   },
   "categories": [
     "Other"
@@ -16,7 +14,7 @@
     "onCommand:seeing-is-believing.run",
     "onCommand:seeing-is-believing.clean"
   ],
-  "main": "./extension",
+  "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
@@ -40,27 +38,38 @@
           "type": "boolean",
           "default": false,
           "description": "Disables --xmpfilter-style if there are no lines marked for annotation"
+        },
+        "seeing-is-believing.halt-run-on-error": {
+          "type": "boolean",
+          "default": true,
+          "description": "Set this to false if you would like to continue the run command in the event of an error. By default, any errors that seeing_is_believing experiences will cause the run command to terminate without changing anything."
         }
       }
     }
   },
   "scripts": {
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "node ./node_modules/vscode/bin/test"
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "lint": "eslint src --ext ts",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run compile && yarn run lint",
+    "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/mocha": "^2.2.32",
-    "@types/node": "^6.0.40",
-    "chai": "^3.5.0",
-    "eslint": "^3.6.0",
-    "eslint-config-standard": "^11.0.0-beta.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-node": "^6.0.0",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "mocha": "^2.3.3",
-    "sinon": "^2.1.0",
-    "typescript": "^2.0.3",
-    "vscode": "^1.0.0"
+    "@types/chai": "^4.2.11",
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^7.0.1",
+    "@types/node": "^12.11.7",
+    "@types/sinon": "^7.5.2",
+    "@types/vscode": "^1.43.0",
+    "@typescript-eslint/eslint-plugin": "^2.18.0",
+    "@typescript-eslint/parser": "^2.18.0",
+    "chai": "^4.2.0",
+    "eslint": "^6.8.0",
+    "glob": "^7.1.6",
+    "mocha": "^7.0.1",
+    "sinon": "^9.0.1",
+    "typescript": "^3.7.5",
+    "vscode-test": "^1.3.0"
   }
 }
