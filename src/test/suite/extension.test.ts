@@ -579,8 +579,10 @@ describe("Integration tests", function() {
       it("annotates the whole document if no lines are marked", function(done) {
         const document = getActiveDocument();
         const stub = sinon.stub(workspace, "getConfiguration");
+
+        // @ts-ignore
         stub.withArgs("seeing-is-believing").returns({
-          get: function(key) {
+          get(key: string) {
             if (key === "annotate-all-if-none-are-marked") {
               return true;
             } else {
@@ -622,8 +624,9 @@ describe("Integration tests", function() {
       it("only annotates marked lines if any are marked", function(done) {
         const document = getActiveDocument();
         const stub = sinon.stub(workspace, "getConfiguration");
+        // @ts-ignore
         stub.withArgs("seeing-is-believing").returns({
-          get: function(key) {
+          get: function(key: string) {
             if (key === "annotate-all-if-none-are-marked") {
               return true;
             } else {
