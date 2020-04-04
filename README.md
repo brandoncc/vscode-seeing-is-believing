@@ -46,8 +46,8 @@ tell the extension to continue if it experiences any errors by setting
 
 ## Known Issues
 
-`seeing_is_believing` has a warning when run on Ruby 2.7.0. That error looks
-like this:
+`seeing_is_believing` prior to version 4.0 has a warning when run on Ruby 2.7.0.
+That error looks like this:
 
 ```
 /Users/brandoncc/.rbenv/versions/2.7.0/lib/ruby/gems/2.7.0/gems/parser-2.5.3.0/lib/parser/source/tree_rewriter.rb:269: warning: Using the last argument as keyword parameters is deprecated; maybe ** should be added to the call
@@ -58,6 +58,9 @@ If you experience this, turn off `seeing-is-believing.halt-run-on-error` and
 turn on `seeing-is-believing.annotate-all-if-none-are-marked`. That should allow
 the extension to function properly, although it will not fix the errors/warnings
 until `seeing_is_believing` itself is fixed.
+
+The recommended solution is to upgrade to version 4.0 or higher of the gem, if
+you are able to.
 
 ## Release Notes
 
